@@ -23,8 +23,21 @@ pipeline {
 
          stage ('Api Test') {
             steps {
-               git 'https://github.com/matheusdouglas/tasks-api-test'
-               bat 'mvn test'
+                dir('api-test') {
+                    git 'https://github.com/matheusdouglas/tasks-api-test'
+                    bat 'mvn test'
+                }
+            }
+        }
+
+
+         stage ('Deploy FrontEnd') {
+            steps {
+                dir('frontend') {
+                    git 'https://github.com/matheusdouglas/tasks-frontend'
+                    bat 'mvn test'
+                    deploy adapters: [tomcat9(credentialsId: 'TomcatLogin', path: '', url: 'http://localhost:8001/')], contextPath: 'tasks', war: 'target/tasks.war'
+                }
             }
         }
     }
